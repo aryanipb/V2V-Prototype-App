@@ -76,7 +76,8 @@ jobs:
         if: env.V2V_KEYSTORE_PATH != ''
         run: |
           apk=app/build/outputs/apk/release/app-release.apk
-          "$ANDROID_HOME"/build-tools/*/apksigner verify --print-certs "$apk"
+          apksigner=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$apksigner" verify --print-certs "$apk"
           cp "$apk" V2V-App.apk
           sha256sum V2V-App.apk > V2V-App.apk.sha256
 
