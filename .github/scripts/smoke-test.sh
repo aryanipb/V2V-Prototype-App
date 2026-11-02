@@ -11,16 +11,23 @@ adb logcat -c
 adb shell am start -W -n "$package/.MainActivity"
 sleep "$settle_seconds"
 
-crashes=$(adb logcat -d -b crash,main | grep -E "FATAL EXCEPTION|Process: $package|UnsatisfiedLinkError|ClassNotFoundException|NoSuchMethodError" || true)
-if [ -n "$crashes" ]; then
-  echo "$crashes"
-  adb logcat -d -b crash | tail -50
+# Only this app's crash records and process logs count; other apps log unrelated errors.
+crash_report=$(adb logcat -d -b crash | grep -A 30 "Process: $package" || true)
+if [ -n "$crash_report" ]; then
+  echo "$crash_report"
   exit 1
 fi
 
-if ! adb shell pidof "$package" > /dev/null; then
+pid=$(adb shell pidof "$package" | tr -d '\r' || true)
+if [ -z "$pid" ]; then
   echo "App is not running after ${settle_seconds}s"
   adb logcat -d | tail -100
+  exit 1
+fi
+
+fatal_errors=$(adb logcat -d --pid="$pid" | grep -E "UnsatisfiedLinkError|ClassNotFoundException|NoSuchMethodError|NoClassDefFoundError" || true)
+if [ -n "$fatal_errors" ]; then
+  echo "$fatal_errors"
   exit 1
 fi
 
