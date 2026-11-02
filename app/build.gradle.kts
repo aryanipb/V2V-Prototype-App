@@ -17,8 +17,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Release signing is supplied by the environment; without it the APK is unsigned.
+    val releaseKeystorePath = System.getenv("V2V_KEYSTORE_PATH")
+    if (!releaseKeystorePath.isNullOrBlank()) {
+        signingConfigs.create("release") {
+            storeFile = file(releaseKeystorePath)
+            storePassword = System.getenv("V2V_KEYSTORE_PASSWORD")
+            keyAlias = "v2v-release"
+            keyPassword = System.getenv("V2V_KEYSTORE_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

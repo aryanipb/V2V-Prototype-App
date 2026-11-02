@@ -17,8 +17,21 @@ This is designed for demonstrations, prototyping, and field-style validation of 
   - `Devices` tab: exact connected Nearby endpoint IDs
   - `Coordinates` tab: exact `30` predicted `(x, y)` coordinates
 
-## Direct APK Download
-[Download latest APK](https://media.githubusercontent.com/media/aryanipb/DriveSmart/main/app/build/outputs/apk/debug/app-debug.apk)
+## Download the App
+[![Download APK](https://img.shields.io/badge/Download-Android%20APK-2ea44f?style=for-the-badge&logo=android&logoColor=white)](https://github.com/aryanipb/V2V-Prototype-App/releases/latest/download/V2V-App.apk)
+[![Latest release](https://img.shields.io/github/v/release/aryanipb/V2V-Prototype-App?style=for-the-badge)](https://github.com/aryanipb/V2V-Prototype-App/releases/latest)
+[![Android CI/CD](https://img.shields.io/github/actions/workflow/status/aryanipb/V2V-Prototype-App/android.yml?style=for-the-badge&label=CI%2FCD)](https://github.com/aryanipb/V2V-Prototype-App/actions/workflows/android.yml)
+
+**[Download V2V-App.apk](https://github.com/aryanipb/V2V-Prototype-App/releases/latest/download/V2V-App.apk)** (about 160 MB, Android 8.0 or newer). This link always points to the latest release.
+
+To install:
+1. Open the downloaded APK on your Android phone.
+2. If prompted, allow installs from your browser or file manager. The app is distributed outside the Play Store, so Android may show a warning.
+3. Open the app and grant the requested permissions.
+
+If an older debug build of the app is installed, uninstall it first because release builds use a different signing key.
+
+The app needs at least two phones to show live V2V exchange. See the [Multi-Device Demo SOP](#multi-device-demo-sop-standard-operating-procedure).
 
 ## Technology Stack
 - Kotlin + Android SDK (minSdk `26`, targetSdk `34`)
@@ -100,6 +113,21 @@ Use `2+` Android phones (recommended `3-5` for stronger demo impact).
 ## Current Scope and Limits
 - Optimized for prototype/demo usage, not certified vehicular safety deployment.
 - Uses mobile sensors and Nearby transport, so performance depends on device hardware and environment.
+
+## CI/CD and Releases
+[GitHub Actions](.github/workflows/android.yml) builds the release APK on every push to `main` and on pull requests.
+
+To publish a new version:
+1. Increase `versionCode` and set `versionName` in `app/build.gradle.kts`.
+2. Commit the change, then push a matching tag:
+   ```bash
+   git tag v1.1.0
+   git push origin main v1.1.0
+   ```
+
+The tag run checks that it matches `versionName`, builds and signs the APK, launches it on an Android emulator, and only then publishes it to [GitHub Releases](https://github.com/aryanipb/V2V-Prototype-App/releases).
+
+Signing uses the `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEYSTORE_PASSWORD` repository secrets.
 
 ## Repository Structure
 - `app/src/main/kotlin/com/aryan/v2v/MainActivity.kt` - app orchestration loops
